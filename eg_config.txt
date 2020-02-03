@@ -1,0 +1,71 @@
+{
+    "ProjectName": "Testing Only",
+    "Location": "101.1212, 112.1133",
+    "AverageRT": 0,
+    "Polls": [
+        {
+            "type": "Serial", // a direct connection with serial port
+            "protocol": "RTU", // RTU, ASCII
+            "port": "COM1", // COM1,'/dev/ttyS0' for linux
+            "baudRate": 9600, 
+            "dataBits": 8, 
+            "stopBits": 1, 
+            "parity": "none", 
+            "Devices": [
+                {
+                    "name": "Device 1", // name that given to the device
+                    "deviceNum": 1, // 
+                    "address": 1, // address of the registers
+                    "dataType": "int", // int, float, floating_point
+                    "mod": " reading / 10", // modification to the reading, variable name is "reading"
+                    "registerLength": 1, // number of registers to represent a single value
+                    "registerType" : 4, // 3 = Holding Registers, 4 = Input Registers
+                    "registerBit": 16, // 16, 32, 64 is not supported, please follow the device manual
+                    "endian": "BE"  // BE, LE
+                },
+                {
+                    "name": "Device 2",
+                    "deviceNum": 2,
+                    "address": 1,
+                    "dataType": "float",
+                    "mod": "",
+                    "registerLength": 2,
+                    "registerType": 3,
+                    "registerBit": 16,
+                    "endian": "LE"
+                }
+            ]
+        },
+        {
+            "type": "TCP",
+            "host": "127.0.0.1",
+            "port": 502,
+            "Devices": [
+                {
+                    "name": "Device1",
+                    "deviceNum": 1,
+                    "address": 1,
+                    "dataType": "int",
+                    "mod": " reading / 10",
+                    "registerAddress": 1,
+                    "registerLength": 1,
+                    "registerType": 3,
+                    "registerBit": 16,
+                    "endian": "BE"  
+                },
+                {
+                    "name": "Device2",
+                    "deviceNum": 2,
+                    "address": 1,
+                    "dataType": "float",
+                    "mod": "",
+                    "registerAddress": 3,
+                    "registerLength": 2,
+                    "registerType": 4,
+                    "registerBit": 16,
+                    "endian": "LE"
+                }
+            ]
+        }
+    ]
+}

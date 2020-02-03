@@ -1,0 +1,69 @@
+{
+    "ProjectName": "NSTP Chiller",
+    "Location": "3.0637276, 101.627155",
+    "AverageRT": 0,
+    "Polls": [
+        {
+            "type": "TCP",
+            "host": "127.0.0.1",
+            "port": 502,
+            "Devices": [
+                {
+                    "name": "Chiller",
+                    "deviceNum": 8,
+                    "address": 13,
+                    "dataType": "int",
+                    "mod": "",
+                    "registerLength": 1,
+                    "registerType": 3,
+                    "registerBit": 16,
+                    "endian": "BE"
+                },
+                {
+                    "name": "CHWP",
+                    "deviceNum": 3,
+                    "address": 4142,
+                    "dataType": "int",
+                    "mod": "",
+                    "registerLength": 1,
+                    "registerType": 3,
+                    "registerBit": 16,
+                    "endian": "BE"
+                },
+                {
+                    "name": "CDWP",
+                    "deviceNum": 5,
+                    "address": 4142,
+                    "dataType": "int",
+                    "mod": "",
+                    "registerLength": 1,
+                    "registerType": 3,
+                    "registerBit": 16,
+                    "endian": "BE"
+                },
+                {
+                    "name": "CT",
+                    "deviceNum": 7,
+                    "address": 4142,
+                    "dataType": "int",
+                    "mod": "",
+                    "registerLength": 1,
+                    "registerType": 3,
+                    "registerBit": 16,
+                    "endian": "BE"
+                },
+                {
+                    "name": "BTU",
+                    "deviceNum": 13,
+                    "address": 2,
+                    "dataType": "int",
+                    "mod": "",
+                    "registerLength": 1,
+                    "registerType": 3,
+                    "registerBit": 16,
+                    "endian": "BE"
+                }
+            ]
+        }
+    ]
+}
