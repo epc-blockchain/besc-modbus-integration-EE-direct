@@ -469,7 +469,7 @@ if(process.env.REPEAT_EVERY_MINUTES != parseInt(process.env.REPEAT_EVERY_MINUTES
     process.exit();
 }
 
-var job = new CronJob(`*/5 * * * * *`, async function () {
+var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async function () {s
     try {
 
         try {
@@ -484,23 +484,23 @@ var job = new CronJob(`*/5 * * * * *`, async function () {
 
         var devicesReading = await getReading(config.Polls);
 
-        console.log("\nDevices Reading:");
-        console.log(devicesReading);
-        //saveLog("\Devices Reading:");
-        //saveLog(energyReading);
+        //console.log("\nDevices Reading:");
+        //console.log(devicesReading);
+        saveLog("\Devices Reading:");
+        saveLog(energyReading);
 
-        //var energyReading = await calculateEnergy(devicesReading);
+        var energyReading = await calculateEnergy(devicesReading);
 
         //console.log("\nCalculated Reading:");
         //console.log(energyReading);
-        //saveLog("\nCalculated Reading:");
-        //saveLog(energyReading);
+        saveLog("\nCalculated Reading:");
+        saveLog(energyReading);
 
-        //var response = await sendData(energyReading);
+        var response = await sendData(energyReading);
         //console.log("\nESS API Response:");
-		//console.log(response);
-        //saveLog("\ESS API Response:");
-        //saveLog(response);
+	//console.log(response);
+        saveLog("\ESS API Response:");
+        saveLog(response);
 		
 		
         
