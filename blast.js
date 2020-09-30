@@ -469,8 +469,10 @@ if(process.env.REPEAT_EVERY_MINUTES != parseInt(process.env.REPEAT_EVERY_MINUTES
     process.exit();
 }
 
-var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async function () {s
+var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async function () {
     try {
+
+        console.log("Trying to pull and send data");
 
         try {
             configFile = fs.readFileSync("./config.json");
@@ -486,7 +488,7 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
 
         //console.log("\nDevices Reading:");
         //console.log(devicesReading);
-        saveLog("\Devices Reading:");
+        saveLog("\nDevices Reading:");
         saveLog(energyReading);
 
         var energyReading = await calculateEnergy(devicesReading);
@@ -499,7 +501,7 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
         var response = await sendData(energyReading);
         //console.log("\nESS API Response:");
 	//console.log(response);
-        saveLog("\ESS API Response:");
+        saveLog("\nESS API Response:");
         saveLog(response);
 		
 		
@@ -514,3 +516,5 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
 
 
 job.start();
+
+console.log("Task started");
