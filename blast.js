@@ -391,7 +391,7 @@ const calculateEnergy = async (devicesReading) => {
                     try{
                         if(deviceReading.name != "BTU"){
                             formula["Efficiency"].applyFieldsValues({"Device": deviceReading.energy, "BTU": BTUReading});
-                            deviceReading.Efficiency = formulas["Efficiency"].calculate();
+                            deviceReading.Efficiency = formula["Efficiency"].calculate();
                             if(deviceReading.Saved < 0){
                                 deviceReading.Saved = 0;
                             }
@@ -472,7 +472,7 @@ if(process.env.REPEAT_EVERY_MINUTES != parseInt(process.env.REPEAT_EVERY_MINUTES
 var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async function () {
     try {
 
-        console.log("Trying to pull and send data");
+        saveLog("Trying to pull and send data");
 
         try {
             configFile = fs.readFileSync("./config.json");

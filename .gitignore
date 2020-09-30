@@ -61,3 +61,5 @@ typings/
 .next
 .env_local
 .env_remote
+
+deviceData.json
