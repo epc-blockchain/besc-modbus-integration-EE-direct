@@ -8,30 +8,6 @@
         },
         "formula": "(Device * 12000) / BTU"
     }, {
-        "name": "Efficiency",
-        "keys": ["Device", "BTU"],
-        "fieldNames": {
-            "Device": 19,
-            "BTU": 9200
-        },
-        "formula": "(Device * 12000) / BTU"
-    }, {
-        "name": "Efficiency",
-        "keys": ["Device", "BTU"],
-        "fieldNames": {
-            "Device": 18,
-            "BTU": 9200
-        },
-        "formula": "(Device * 12000) / BTU"
-    }, {
-        "name": "Efficiency",
-        "keys": ["Device", "BTU"],
-        "fieldNames": {
-            "Device": 23,
-            "BTU": 9200
-        },
-        "formula": "(Device * 12000) / BTU"
-    }, {
         "name": "BTUFormula",
         "keys": ["BTU1", "BTU2"],
         "fieldNames": {
