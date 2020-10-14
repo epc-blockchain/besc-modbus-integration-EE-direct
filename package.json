@@ -1,6 +1,6 @@
 {
   "name": "besc-modbus-integrate",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
   "author": "besc",
   "license": "ISC",
   "dependencies": {
-    "besc-ess-nodejs-client": "^1.1.1",
+    "besc-ess-nodejs-client": "^1.1.4",
     "cron": "^1.7.1",
     "dotenv": "^8.0.0",
     "ieee-float": "^0.6.0",

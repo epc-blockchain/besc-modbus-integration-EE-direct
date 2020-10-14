@@ -1,28 +1,15 @@
 {
     "Formula": [{
         "name": "Efficiency",
-        "keys": ["Device", "BTU"],
-        "fieldNames": {
-            "Device": 187,
-            "BTU": 9200
-        },
+        "fieldNames": ["Device", "BTU"],
         "formula": "(Device * 12000) / BTU"
     }, {
         "name": "BTUFormula",
-        "keys": ["BTU1", "BTU2"],
-        "fieldNames": {
-            "BTU1": 9200,
-            "BTU2": 9150
-        },
+        "fieldNames": ["BTU1", "BTU2"],
         "formula": "(BTU1 - BTU2) / 12000"
     }, {
         "name": "Daily",
-        "keys": ["Baseline", "Average", "Tons"],
-        "fieldNames": {
-            "Baseline": "1.175",
-            "Average": 0.08054347826086956,
-            "Tons": 0.004166666666666667
-        },
+        "fieldNames": ["Baseline", "Average", "Tons"],
         "formula": "(Baseline - Average) * Tons"
     }]
 }

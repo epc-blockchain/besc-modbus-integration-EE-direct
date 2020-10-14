@@ -5,16 +5,16 @@
     "Polls": [
         {
             "type": "TCP",
-            "host": "127.0.0.1",
+            "host": "192.168.0.80",
             "port": 502,
             "Devices": [
                 {
                     "name": "Chiller",
                     "deviceNum": 8,
-                    "address": 13,
+                    "address": 12,
                     "dataType": "int",
                     "mod": "",
-                    "registerLength": 1,
+                    "registerLength": 2,
                     "registerType": 3,
                     "registerBit": 16,
                     "endian": "BE"
@@ -22,10 +22,10 @@
                 {
                     "name": "CHWP",
                     "deviceNum": 3,
-                    "address": 4142,
-                    "dataType": "int",
+                    "address": 4140,
+                    "dataType": "float",
                     "mod": "",
-                    "registerLength": 1,
+                    "registerLength": 2,
                     "registerType": 3,
                     "registerBit": 16,
                     "endian": "BE"
@@ -33,10 +33,10 @@
                 {
                     "name": "CDWP",
                     "deviceNum": 5,
-                    "address": 4142,
-                    "dataType": "int",
+                    "address": 4140,
+                    "dataType": "float",
                     "mod": "",
-                    "registerLength": 1,
+                    "registerLength": 2,
                     "registerType": 3,
                     "registerBit": 16,
                     "endian": "BE"
@@ -44,10 +44,10 @@
                 {
                     "name": "CT",
                     "deviceNum": 7,
-                    "address": 4142,
-                    "dataType": "int",
+                    "address": 4140,
+                    "dataType": "float",
                     "mod": "",
-                    "registerLength": 1,
+                    "registerLength": 2,
                     "registerType": 3,
                     "registerBit": 16,
                     "endian": "BE"
@@ -55,10 +55,10 @@
                 {
                     "name": "BTU",
                     "deviceNum": 13,
-                    "address": 2,
+                    "address": 0,
                     "dataType": "int",
                     "mod": "",
-                    "registerLength": 1,
+                    "registerLength": 2,
                     "registerType": 3,
                     "registerBit": 16,
                     "endian": "BE"

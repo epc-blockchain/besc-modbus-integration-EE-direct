@@ -330,10 +330,10 @@ const getMeterValue = async (id, length, registerAddress, registerType) => {
         var val;
 
         if (registerType == 3) {
-            val = await client.readHoldingRegisters(registerAddress - 1, length);
+            val = await client.readHoldingRegisters(registerAddress, length);
         }
         else if (registerType == 4) {
-            val = await client.readInputRegisters(registerAddress - 1, length);
+            val = await client.readInputRegisters(registerAddress, length);
         }
         else {
             throw 'Invalid registerType'
@@ -486,21 +486,16 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
 
         var devicesReading = await getReading(config.Polls);
 
-        //console.log("\nDevices Reading:");
-        //console.log(devicesReading);
         saveLog("\nDevices Reading:");
-        saveLog(energyReading);
+        saveLog(JSON.stringify(devicesReading));
 
         var energyReading = await calculateEnergy(devicesReading);
 
-        //console.log("\nCalculated Reading:");
-        //console.log(energyReading);
         saveLog("\nCalculated Reading:");
         saveLog(energyReading);
 
         var response = await sendData(energyReading);
-        //console.log("\nESS API Response:");
-	//console.log(response);
+
         saveLog("\nESS API Response:");
         saveLog(response);
 		
