@@ -1,5 +1,5 @@
-{
-    "Formula": [{
+[
+    {
         "name": "Efficiency",
         "fieldNames": ["Device", "BTU"],
         "formula": "(Device * 12000) / BTU"
@@ -11,5 +11,5 @@
         "name": "Daily",
         "fieldNames": ["Baseline", "Average", "Tons"],
         "formula": "(Baseline - Average) * Tons"
-    }]
-}
+    }
+]
