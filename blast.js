@@ -378,9 +378,8 @@ const calculateEnergy = async (devicesReading) => {
     var devicesReadingObj = convertArrayToSimpleObject(devicesReading, "name", "energy");
 
     //Get baseline reading from contract
-    //const baseline = await besc_client.helper.getBaseline(host_client, keypair);
-    const baseline = 1.17;
-
+    const baseline = await besc_client.helper.getBaseline(host_client, keypair);
+    
     //Get formula from contract
     var formula = await besc_client.helper.getAllFormulas(host_client, keypair);
 
