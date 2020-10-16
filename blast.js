@@ -53,6 +53,17 @@ function saveLog(savingText){
     fs.appendFileSync('./logs.log', data);
 }
 
+function convertArrayToSimpleObject(array, objKey, objValue){
+
+    var tempObj = {};
+
+    for(var x =0; x < array.length; x++){
+        tempObj[array[x][objKey]] = array[x][objValue];
+    }
+
+    return tempObj;
+}
+
 const reConnection = async(doCount = true)=>{
 
     if(reconCount === 3){
@@ -351,83 +362,135 @@ const getMeterValue = async (id, length, registerAddress, registerType) => {
 const calculateEnergy = async (devicesReading) => {
     var newReading = [];
     var oldReading = [];
-    var finalReading = [];
+    var finalReading = {
+        name: "Chiller", 
+        EnergyUsage : 0, 
+        Saved : 0, 
+        Efficiency: 0,
+        Formula: []
+    };
 
-    var efficiency =0;
-    var TotalEfficiency=0;
+    var result1 = 0, result2 = 0;
+
+    var Chiller_Efficiency = 0, CHWP_Efficiency = 0, CDWP_Efficiency = 0, CT_Efficiency = 0;
+    var TotalEfficiency= 0;
+
+    var devicesReadingObj = convertArrayToSimpleObject(devicesReading, "name", "energy");
+
     //Get baseline reading from contract
-    const baseline = await besc_client.helper.getBaseline(host_client, keypair);
+    //const baseline = await besc_client.helper.getBaseline(host_client, keypair);
+    const baseline = 1.17;
 
     //Get formula from contract
-    formula = await besc_client.helper.getAllFormulas(host_client, keypair);
+    var formula = await besc_client.helper.getAllFormulas(host_client, keypair);
+
+    var BTU_Reading = 0;
+    var previousBTU_Reading = 0;
+
+    BTU_Reading = devicesReadingObj["BTU"];       
+
+    for (var x = 0; x < devicesReading.length; x++) {
+        var tempDeviceReading = devicesReading[x];
+
+        try{
+            if(tempDeviceReading.name != "BTU"){
+                
+                formula["Efficiency"].applyFieldsValues({"DeviceInput": tempDeviceReading.energy, "BTU": BTU_Reading});
+                devicesReading[x].Efficiency = formula["Efficiency"].calculate();
+
+                switch (tempDeviceReading.name) {
+                    case "Chiller":
+                        Chiller_Efficiency = devicesReading[x].Efficiency;
+                        break;
+                    case "CHWP":
+                        CHWP_Efficiency = devicesReading[x].Efficiency;
+                        break;
+
+                    case "CDWP":
+                        CDWP_Efficiency = devicesReading[x].Efficiency;
+                        break;
+
+                    case "CT":
+                        CT_Efficiency = devicesReading[x].Efficiency;
+                        break;
+                
+                    default:
+                        break;
+                }
+            }
+        }
+        catch(error){
+            console.log(error);
+        }
+    }
+    saveLog("\n\nCalculated Efficiency");
+    saveLog(JSON.stringify(devicesReading));
+
+    formula["Total_Efficiency"].applyFieldsValues({
+        "Chiller_Efficiency": Chiller_Efficiency, 
+        "CHWP_Efficiency": CHWP_Efficiency,
+        "CDWP_Efficiency" : CDWP_Efficiency,
+        "CT_Efficiency" : CT_Efficiency
+    });
+
+    TotalEfficiency = formula["Total_Efficiency"].calculate();
+
+    finalReading.Efficiency = TotalEfficiency;
 
     if (fs.existsSync("./deviceData.json")) {
 
         try {
-            var previousReading;
-            var BTUReading = 0;
             
-            var deviceData = fs.readFileSync("./deviceData.json");
-            previousReading = JSON.parse(deviceData);
-            oldReading = previousReading.Devices;
+            var previousDeviceData = fs.readFileSync("./deviceData.json");
+            var previousReading = JSON.parse(previousDeviceData);
+
+            if(previousReading.Devices){
+
+                var previousDevicesReadingObj = convertArrayToSimpleObject(previousReading.Devices, "name", "energy");
+
+                saveLog("\n\nPrevious Chiller Reading:" + previousDevicesReadingObj["Chiller"]);
+
+                finalReading.EnergyUsage = devicesReadingObj["Chiller"] - previousDevicesReadingObj["Chiller"];
+
+                previousBTU_Reading = previousDevicesReadingObj["BTU"];
+
+                saveLog("\n\nPrevious BTU Reading:" + previousBTU_Reading);
+
+                formula["Hourly_1"].applyFieldsValues({
+                    "Baseline": baseline, 
+                    "Total_Efficiency": TotalEfficiency
+                });
             
-            var previousReadingObj = oldReading.reduce((map, obj) => (map[obj.name] = obj.energy, map), {});
-
-            //Assign BTU value
-            for (var x = 0; x < devicesReading.length; x++) {
-                var deviceRead = { name: devicesReading[x].name, energy: devicesReading[x].energy };
-                if (previousReadingObj[deviceRead.name]) {
-                    if(deviceRead.name == "BTU"){
-                        BTUReading = deviceRead.energy;                
-                    }           
-                }
-                
-            }
+                result1 = formula["Hourly_1"].calculate();
             
-            //Example Calculate Total Efficiency of devices
-            for (var x = 0; x < devicesReading.length; x++) {
-                var deviceReading = { name: devicesReading[x].name, energy: devicesReading[x].energy, Efficiency: efficiency};
-                if (previousReadingObj[deviceReading.name]) {
-                    try{
-                        if(deviceReading.name != "BTU"){
-                            formula["Efficiency"].applyFieldsValues({"Device": deviceReading.energy, "BTU": BTUReading});
-                            deviceReading.Efficiency = formula["Efficiency"].calculate();
-                            if(deviceReading.Saved < 0){
-                                deviceReading.Saved = 0;
-                            }
-                        }
+                formula["Hourly_2"].applyFieldsValues({
+                    "BTU_old": previousBTU_Reading, 
+                    "BTU_new": BTU_Reading
+                });
+            
+                result2 = formula["Hourly_2"].calculate();
 
-                    }
+                formula["Hourly_Saving"].applyFieldsValues({
+                    "result1": result1, 
+                    "result2": result2
+                });
 
-                    catch(error){console.log(error);}
-                    
-                        if (deviceReading.energy < 0) {
-                            deviceReading.energy = 0;
-                        }
-                    
-                    newReading.push(deviceReading);
-                    
-                }
-                else {
-                    newReading.push(deviceReading);
-                }
+                finalReading.Saved = formula["Hourly_Saving"].calculate();
 
-            }
-            var newReadingObj = newReading.reduce((map, obj) => (map[obj.name] = obj.energy, map), {});
-            for (let deviceName in previousReadingObj) {
-                if (typeof newReadingObj[deviceName] === "undefined") {
-                    devicesReading.push({ name: deviceName, Efficiency: previousReadingObj[deviceName] });
-                }
-            }
+                finalReading.Formula = [
+                    formula["Total_Efficiency"],
+                    formula["Hourly_1"],
+                    formula["Hourly_2"],
+                    formula["Hourly_Saving"]
+                ];
+            }            
 
         } catch (error) {
-            console.log(error);
-            newReading = devicesReading;
+            saveLog(JSON.stringify(error));
         }
     }
-    else {
-        newReading = devicesReading;
-    }
+
+    newReading = devicesReading;
 
     //Write data into deviceData.json
     var formatedData = jsBeautify(JSON.stringify({ "Devices": newReading }));
@@ -486,20 +549,18 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
 
         var devicesReading = await getReading(config.Polls);
 
-        saveLog("\nDevices Reading:");
+        saveLog("\n\nDevices Reading:");
         saveLog(JSON.stringify(devicesReading));
 
         var energyReading = await calculateEnergy(devicesReading);
 
-        saveLog("\nCalculated Reading:");
-        saveLog(energyReading);
+        saveLog("\n\nCalculated Reading:");
+        saveLog(JSON.stringify(energyReading));
 
         var response = await sendData(energyReading);
 
-        saveLog("\nESS API Response:");
-        saveLog(response);
-		
-		
+        saveLog("\n\nESS API Response:");
+        saveLog(JSON.stringify(response));
         
     } catch (error) {
         saveLog(`Throw at cronjob: ${error}`);
@@ -507,7 +568,7 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
 
     //job.stop();
 
-}, null, false, 'UTC');
+}, null, false, 'UTC', null, false);
 
 
 job.start();

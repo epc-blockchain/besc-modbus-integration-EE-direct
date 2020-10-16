@@ -1,15 +1,27 @@
 [
     {
         "name": "Efficiency",
-        "fieldNames": ["Device", "BTU"],
-        "formula": "(Device * 12000) / BTU"
-    }, {
-        "name": "BTUFormula",
-        "fieldNames": ["BTU1", "BTU2"],
-        "formula": "(BTU1 - BTU2) / 12000"
-    }, {
-        "name": "Daily",
-        "fieldNames": ["Baseline", "Average", "Tons"],
-        "formula": "(Baseline - Average) * Tons"
+        "fieldNames": ["DeviceInput", "BTU"],
+        "formula": "(DeviceInput * 12000) / BTU"
+    }, 
+    {
+        "name": "Total_Efficiency",
+        "fieldNames": ["Chiller_Efficiency", "CHWP_Efficiency", "CDWP_Efficiency", "CT_Efficiency"],
+        "formula": "Chiller_Efficiency + CHWP_Efficiency + CDWP_Efficiency + CT_Efficiency"
+    }, 
+    {
+        "name": "Hourly_1",
+        "fieldNames": ["Baseline", "Total_Efficiency"],
+        "formula": "Baseline - Total_Efficiency"
+    }, 
+    {
+        "name": "Hourly_2",
+        "fieldNames": ["BTU_old", "BTU_new"],
+        "formula": "BTU_old - BTU_new"
+    }, 
+    {
+        "name": "Hourly_Saving",
+        "fieldNames": ["result1", "result2"],
+        "formula": "(result2 / 12000 ) * result1"
     }
 ]

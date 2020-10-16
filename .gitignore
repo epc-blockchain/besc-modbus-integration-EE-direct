@@ -63,3 +63,4 @@ typings/
 .env_remote
 
 deviceData.json
+sample.json
