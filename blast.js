@@ -505,6 +505,18 @@ const sendData = async (deviceReading) => {
 
     var reading = [];
 
+    if(deviceReading.EnergyUsage == null || deviceReading.EnergyUsage == undefined){
+        deviceReading.EnergyUsage = 0;
+    }
+
+    if(deviceReading.Saved == null || deviceReading.Saved == undefined){
+        deviceReading.Saved = 0;
+    }
+
+    if(deviceReading.Efficiency == null || deviceReading.Efficiency == undefined){
+        deviceReading.Efficiency = 0;
+    }
+
     reading.push(new Device(deviceReading.name, deviceReading.EnergyUsage, deviceReading.Saved, deviceReading.Efficiency, deviceReading.Formula));
    
     var projectData = ProjectData.createWithCurrentTime(
