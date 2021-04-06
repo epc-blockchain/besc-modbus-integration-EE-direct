@@ -16,8 +16,8 @@
     }, 
     {
         "name": "Hourly_2",
-        "fieldNames": ["BTU_old", "BTU_new"],
-        "formula": "BTU_old - BTU_new"
+        "fieldNames": ["BTU_new"],
+        "formula": "BTU_new"
     }, 
     {
         "name": "Hourly_Saving",
