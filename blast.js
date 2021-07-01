@@ -602,7 +602,7 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
         const baseline = inputBaseline ? inputBaseline : await besc_client.helper.getBaseline(host_client, keypair);
 
         //Get formula from contract
-        var formula = inputFormula ? inputFormula : await besc_client.helper.getAllFormulas(host_client, keypair);
+        var formula = await besc_client.helper.getAllFormulas(host_client, keypair);
 
         for(record of records){
             
