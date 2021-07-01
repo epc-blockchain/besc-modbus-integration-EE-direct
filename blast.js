@@ -11,6 +11,8 @@ var DeviceReading = require('./DeviceReading');
 
 var keypair = new besc_client.keyPair(process.env.PROJECT_ID, process.env.APIKEY);
 
+const inputBaseline = parseFloat(process.env.BASELINE);
+
 const ProjectData = besc_client.ProjectData;
 const Device = besc_client.Device;
 

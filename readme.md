@@ -74,7 +74,6 @@ Sample :
 			REPEAT_EVERY_MINUTES=30
 			BESC_ESS_API_PATH=
 			DISABLE_DATA_SEND=
-			
 ```
 
 
@@ -88,6 +87,7 @@ Explaination :
 | REPEAT_EVERY_MINUTES | Repeat the reading and data pushing to ESS-API every n minutes. |
 | BESC_ESS_API_PATH    | It is the URL to the ESS-API, it will pass to the SDK. If it is empty, SDK will use default URL. |
 | DISABLE_DATA_SEND    | Leave it empty for the application to send data to ESS-API, if not empty, it will stop the send of data to ESS-API. It is used for data reading testing without sending the data out |
+| BASELINE             | Optional, can put in numeric value to set baseline |
 
 
 
