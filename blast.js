@@ -620,6 +620,13 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
                 continue;
             }
 
+            if(record.BTU === null || record.BTU === 0){
+                tempEnergyData.SEND = 1;
+                await dbUtils.updateEnergyData(record.rowid, tempEnergyData);
+                console.log("BTU in record is 0, skipping this record");
+                continue;
+            }
+
             var previousData = records.find(x => x.rowid === record.rowid - 1);
 
             if(!previousData){
