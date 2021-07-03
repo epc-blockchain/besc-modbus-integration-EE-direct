@@ -514,6 +514,13 @@ const sendBatchData = async () => {
     for (const energyReading of energyReadings) {
         var energyData = EnergyData.parseFromObject(energyReading);
 
+        if(energyData.BTU === null || energyData.BTU === 0){
+            energyData.SEND = 1;
+            await dbUtils.updateEnergyData(energyReading.rowid, energyData);
+            console.log("BTU in record is 0, skipping this record");
+            continue;
+        }
+
         var reading = [];
 
         var formulas = [];
@@ -539,15 +546,20 @@ const sendBatchData = async () => {
     }
 
     try {
-        var response = await besc_client.API.sendBatchProjectData(host_client, keypair, sendingData);
+        if(sendingData.length){
+            var response = await besc_client.API.sendBatchProjectData(host_client, keypair, sendingData);
 
-        for(const energyReading of energyReadings){
-            var energyData = EnergyData.parseFromObject(energyReading);
-            energyData.SEND = 1;
-            await dbUtils.updateEnergyData(energyReading.rowid, energyData);
+            for(const energyReading of energyReadings){
+                var energyData = EnergyData.parseFromObject(energyReading);
+                energyData.SEND = 1;
+                await dbUtils.updateEnergyData(energyReading.rowid, energyData);
+            }
+
+            return response;
         }
-
-        return response;
+        else{
+            return "No data to push";
+        }
     }
     catch (apiError) {
         saveLog(`Throw at sendBatchData: ${apiError}`);
