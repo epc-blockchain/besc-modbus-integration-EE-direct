@@ -241,6 +241,32 @@ class dbUtils{
 
         return data;
     }
+
+    static async resetEnergyData(){
+
+        db = new sqlite3.Database(dbName);
+
+        var data = await new Promise(async function (resolve, reject) {
+            db.serialize(function() {
+    
+                var stmt = db.prepare(`UPDATE energyData SET name = '' WHERE SEND = 0 `);
+    
+                stmt.run((result, err)=>{
+                    if(err){
+                        reject(err);
+                    }
+
+                    resolve(result);
+                });
+    
+                stmt.finalize();
+            });
+        });
+    
+        db.close();
+
+        return data;
+    }
 }
 
 module.exports = dbUtils;

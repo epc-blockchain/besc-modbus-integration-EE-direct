@@ -13,12 +13,12 @@ class DeviceReading{
 
     static parseFromObject(variable){
         var deviceReading = new DeviceReading();
-        deviceReading.Chiller = variable['Chiller'] ? variable['Chiller'] : null;
-        deviceReading.CHWP = variable['CHWP'] ? variable['CHWP'] : null;
-        deviceReading.CDWP = variable['CDWP'] ? variable['CDWP'] : null;
-        deviceReading.CT = variable['CT'] ? variable['CT'] : null;
-        deviceReading.BTU = variable['BTU'] ? variable['BTU'] : null;
-        deviceReading.dateTime = variable['dateTime'] ? variable['dateTime'] : null;
+        deviceReading.Chiller = variable['Chiller'] !== null ? variable['Chiller'] : null;
+        deviceReading.CHWP = variable['CHWP'] !== null? variable['CHWP'] : null;
+        deviceReading.CDWP = variable['CDWP'] !== null ? variable['CDWP'] : null;
+        deviceReading.CT = variable['CT'] !== null ? variable['CT'] : null;
+        deviceReading.BTU = variable['BTU'] !== null ? variable['BTU'] : null;
+        deviceReading.dateTime = variable['dateTime'] !== null ? variable['dateTime'] : null;
 
         return deviceReading;
     }
