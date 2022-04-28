@@ -520,6 +520,12 @@ const sendBatchData = async () => {
             console.log("BTU in record is 0, skipping this record");
             continue;
         }
+        else if(energyData.Formula === null){
+            energyData.SEND = 1;
+            await dbUtils.updateEnergyData(energyReading.rowid, energyData);
+            console.log("formula is null, data corrupted, skipping this record");
+            continue;
+        }
 
         var reading = [];
 
