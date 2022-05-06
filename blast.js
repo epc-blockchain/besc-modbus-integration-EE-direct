@@ -538,7 +538,7 @@ const sendBatchData = async () => {
             formulas.push(formula);
         }
 
-        reading.push(new Device(energyData.name, energyData.EnergyUsage, energyData.Saved, energyData.Efficiency, formulas));
+        reading.push(new Device("Chiller", energyData.EnergyUsage, energyData.Saved, energyData.Efficiency, formulas));
    
         var projectData = new ProjectData(
             energyData.dateTime,
