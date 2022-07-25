@@ -111,31 +111,10 @@ const getReading = async (polls) => {
 
             await createConnection(poll);
 
-            /*
-            if(Object.keys(clients).length > 0 ){ // && poll.type.toLowerCase() === "serial"
-                //saveLog("Closing now");
-                //client.close();    
-                client = clients[x];
-            }
-            else{
-                await createConnection(poll);
-
-                if(poll.type.toLowerCase() === "serial"){
-                    clients[x] = client;
-                }
-            }
-            */
-
-            //saveLog(client);
-
             var singlePollReading = await getDevicesReading(poll.Devices);    
 
             Array.prototype.push.apply(readings, singlePollReading);
-            
-
-            //saveLog(client.isOpen);
-
-            
+        
             if(client && client.isOpen){
                 saveLog("Connection closed");
                 client.close();
@@ -518,7 +497,7 @@ const sendBatchData = async () => {
 
         var formulas = [];
 
-        if(energyData.BTU === null || energyData.BTU === 0 || energyData.Formula === null || energyData.Formula === '' || energyData.Formula === '[]'){
+        if(energyData.TotalKWH === null || energyData.TotalKWH === 0 || energyData.Formula === null || energyData.Formula === '' || energyData.Formula === '[]'){
             reading.push(new Device(config.DeviceName, energyData.EnergyUsage, energyData.Saved, energyData.Efficiency, []));
    
             var projectData = new ProjectData(
@@ -607,11 +586,9 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
 
         var devicesReadingObj = convertArrayToSimpleObject(devicesReading, "name", "energy");
 
-        energyData.BTU = devicesReadingObj['BTU'];
-        energyData.Chiller = devicesReadingObj['Chiller'];
-        energyData.CDWP = devicesReadingObj['CDWP'];
-        energyData.CHWP = devicesReadingObj['CHWP'];
-        energyData.CT = devicesReadingObj['CDWP'];
+        energyData.EnergySaving = devicesReadingObj['EnergySaving'];
+        energyData.TotalKWH = devicesReadingObj['TotalKWH'];
+        energyData.TotalEFF = devicesReadingObj['TotalEFF'];
         energyData.dateTime = new Date().toISOString();
         energyData.SEND = 0;
 
@@ -641,13 +618,13 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
                 continue;
             }
 
-            if(record.BTU === null || record.BTU === 0){
+            if(record.TotalKWH === null || record.TotalKWH === 0){
                 tempEnergyData.setDefaultEmpty();
                 await dbUtils.updateEnergyData(record.rowid, tempEnergyData);
                 continue;
             }
 
-            var previousData = records.find(x => x.rowid < record.rowid && x.BTU !== 0);
+            var previousData = records.find(x => x.rowid < record.rowid && x.TotalKWH !== 0);
 
             if(!previousData){
                 previousData = await dbUtils.getLastValidEnergyData(record.rowid);
@@ -670,13 +647,8 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
             saveLog("Calculated Reading:");
             saveLog(JSON.stringify(energyReading));
 
-            tempEnergyData.CDWP_Efficiency = energyReading.CDWP_Efficiency;
-            tempEnergyData.CHWP_Efficiency = energyReading.CHWP_Efficiency;
-            tempEnergyData.CT_Efficiency = energyReading.CT_Efficiency;
-            tempEnergyData.Chiller_Efficiency = energyReading.Chiller_Efficiency;
-            tempEnergyData.Efficiency = energyReading.Efficiency;
-            tempEnergyData.EnergyUsage = energyReading.EnergyUsage;
-            tempEnergyData.Saved = energyReading.Saved;
+            // tempEnergyData.EnergyUsage = energyReading.EnergyUsage;
+            // tempEnergyData.Saved = energyReading.Saved;
             tempEnergyData.name = energyReading.name;
             tempEnergyData.Formula = JSON.stringify(formulaFormatted);
 

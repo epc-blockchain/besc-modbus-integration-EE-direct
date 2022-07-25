@@ -11,20 +11,14 @@ class dbUtils{
             db.serialize(function() {
 
                 let createTable = `CREATE TABLE IF NOT EXISTS energyData (
-                    Chiller REAL,
-                    CHWP REAL,
-                    CDWP REAL,
-                    CT REAL,
-                    BTU REAL,
+                    EnergySaving REAL,
+                    TotalKWH REAL,
+                    TotalEFF REAL,
                     dateTime TEXT,
                     name TEXT,
                     EnergyUsage REAL,
                     Saved REAL,
                     Efficiency REAL,
-                    Chiller_Efficiency REAL,
-                    CHWP_Efficiency REAL,
-                    CDWP_Efficiency REAL,
-                    CT_Efficiency REAL,
                     SEND INTERGER DEFAULT 0,
                     Formula TEXT
                 );`;
@@ -144,7 +138,7 @@ class dbUtils{
 
         var data = await new Promise(async function (resolve, reject) {
 
-            var stmt = db.prepare(`SELECT rowid, * FROM energyData WHERE BTU <> 0 AND rowid < (?) ORDER BY rowid DESC LIMIT 1`);
+            var stmt = db.prepare(`SELECT rowid, * FROM energyData WHERE TotalKWH <> 0 AND rowid < (?) ORDER BY rowid DESC LIMIT 1`);
 
             stmt.get(id, function(err, row) {
                 
@@ -208,20 +202,15 @@ class dbUtils{
         var data = await new Promise(async function (resolve, reject) {
             db.serialize(function() {
 
-                let cols = `Chiller,
-                CHWP,
-                CDWP,
-                CT,
-                BTU,
+                let cols = `
+                EnergySaving,
+                TotalKWH,
+                TotalEFF,
                 dateTime,
                 name,
                 EnergyUsage,
                 Saved,
                 Efficiency,
-                Chiller_Efficiency,
-                CHWP_Efficiency,
-                CDWP_Efficiency,
-                CT_Efficiency,
                 SEND,
                 Formula`;
     
