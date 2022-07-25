@@ -122,6 +122,7 @@ This is the overall layout of the config.json :
 | ProjectName | The project name given to this group of energy data.         |
 | Location    | A string reprensetative of the project location, it should be the longitude and latitude of the GPS location |
 | AverageRT   | Set the average RT                                           |
+| DeviceName  | Set the device name same as the portal                       |
 | Polls       | It is the data pulling with different set of setting         |
 
 

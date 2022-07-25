@@ -2,6 +2,7 @@
     "ProjectName": "Testing Only",
     "Location": "101.1212, 112.1133",
     "AverageRT": 0,
+    "DeviceName": "Chiller",
     "Polls": [
         {
             "type": "Serial", // a direct connection with serial port

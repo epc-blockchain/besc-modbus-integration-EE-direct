@@ -538,7 +538,7 @@ const sendBatchData = async () => {
             formulas.push(formula);
         }
 
-        reading.push(new Device("Chiller", energyData.EnergyUsage, energyData.Saved, energyData.Efficiency, formulas));
+        reading.push(new Device(config.DeviceName, energyData.EnergyUsage, energyData.Saved, energyData.Efficiency, formulas));
    
         var projectData = new ProjectData(
             energyData.dateTime,
@@ -639,16 +639,15 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
             }
 
             if(record.BTU === null || record.BTU === 0){
-                tempEnergyData.SEND = 1;
+                tempEnergyData.setDefaultEmpty();
                 await dbUtils.updateEnergyData(record.rowid, tempEnergyData);
-                console.log("BTU in record is 0, skipping this record");
                 continue;
             }
 
-            var previousData = records.find(x => x.rowid === record.rowid - 1);
+            var previousData = records.find(x => x.rowid < record.rowid && x.BTU !== 0);
 
             if(!previousData){
-                previousData = await dbUtils.getEnergyData(record.rowid - 1);
+                previousData = await dbUtils.getLastValidEnergyData(record.rowid);
             }
 
             saveLog("Calculate Energy");

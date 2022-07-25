@@ -2,6 +2,7 @@
     "ProjectName": "NSTP Chiller",
     "Location": "3.0637276, 101.627155",
     "AverageRT": 0,
+    "DeviceName": "Chiller",
     "Polls": [
         {
             "type": "TCP",

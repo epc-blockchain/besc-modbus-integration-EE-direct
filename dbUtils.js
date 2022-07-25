@@ -139,6 +139,29 @@ class dbUtils{
         return data;
     }
 
+    static async getLastValidEnergyData(id){
+        db = new sqlite3.Database(dbName);
+
+        var data = await new Promise(async function (resolve, reject) {
+
+            var stmt = db.prepare(`SELECT rowid, * FROM energyData WHERE BTU <> 0 AND rowid < (?) ORDER BY rowid DESC LIMIT 1`);
+
+            stmt.get(id, function(err, row) {
+                
+                if(err)
+                    reject(err);
+
+                resolve(row);
+            });
+
+            stmt.finalize();
+        });
+    
+        db.close();
+
+        return data;
+    }
+
     static async updateEnergyData(id, EnergyData){
 
         db = new sqlite3.Database(dbName);
