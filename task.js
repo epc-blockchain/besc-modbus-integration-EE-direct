@@ -514,22 +514,25 @@ const sendBatchData = async () => {
     for (const energyReading of energyReadings) {
         var energyData = EnergyData.parseFromObject(energyReading);
 
-        if(energyData.BTU === null || energyData.BTU === 0){
-            energyData.SEND = 1;
-            await dbUtils.updateEnergyData(energyReading.rowid, energyData);
-            console.log("BTU in record is 0, skipping this record");
-            continue;
-        }
-        else if(energyData.Formula === null){
-            energyData.SEND = 1;
-            await dbUtils.updateEnergyData(energyReading.rowid, energyData);
-            console.log("formula is null, data corrupted, skipping this record");
-            continue;
-        }
-
         var reading = [];
 
         var formulas = [];
+
+        if(energyData.BTU === null || energyData.BTU === 0 || energyData.Formula === null || energyData.Formula === '' || energyData.Formula === '[]'){
+            reading.push(new Device(config.DeviceName, energyData.EnergyUsage, energyData.Saved, energyData.Efficiency, []));
+   
+            var projectData = new ProjectData(
+                energyData.dateTime,
+                config.ProjectName,
+                reading,
+                config.AverageRT,
+                config.Location
+            );
+
+            sendingData.push(projectData);
+            continue;
+        }
+
         var formulaArray = JSON.parse(energyData.Formula);
 
         for (const declaredFormula of formulaArray) {

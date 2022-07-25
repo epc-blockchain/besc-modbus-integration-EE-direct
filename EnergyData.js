@@ -57,7 +57,7 @@ class EnergyData{
         this.CDWP_Efficiency = this.CDWP_Efficiency ? this.CDWP_Efficiency : 0;
         this.CT_Efficiency = this.CT_Efficiency ? this.CT_Efficiency : 0;
         this.SEND = this.SEND ? this.SEND : 0;
-        this.Formula = this.Formula ? this.Formula : '';
+        this.Formula = this.Formula ? this.Formula : '[]';
     }
 }
 
