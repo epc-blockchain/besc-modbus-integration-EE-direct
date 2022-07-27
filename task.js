@@ -430,12 +430,8 @@ const sendBatchData = async () => {
 
 const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-if(process.env.REPEAT_EVERY_MINUTES != parseInt(process.env.REPEAT_EVERY_MINUTES)){
-    console.log("Trigger minutes must be integer");
-    process.exit();
-}
-
-var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async function () {
+// every hour at minute 1
+var job = new CronJob(`1 * * * *`, async function () {
 
     await dbUtils.initTable();
     
