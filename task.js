@@ -347,139 +347,23 @@ const getMeterValue = async (id, length, registerAddress, registerType) => {
 }
 
 
-const calculateEnergy = async (energyData, previousData, inputBaseline = null, inputFormula = null) => {
+const calculateEnergy = async (energyData, previousTotalKWH, previousTotalEFF) => {
 
     var energyDataObj = EnergyData.parseFromObject(energyData);
-    var deviceReading = DeviceReading.parseFromObject(energyData);
 
     var finalReading = {
         name: "Chiller", 
-        EnergyUsage : 0, 
-        Saved : 0, 
-        Efficiency: 0,
-        Chiller_Efficiency: 0, 
-        CHWP_Efficiency: 0, 
-        CDWP_Efficiency: 0, 
-        CT_Efficiency: 0,
+        EnergyUsage : energyDataObj.TotalKWH - previousTotalKWH, 
+        Saved : energyDataObj.EnergySaving, 
+        Efficiency: energyDataObj.TotalEFF - previousTotalEFF,
         Formula: []
     };
 
-    var result1 = 0, result2 = 0;
-
-    var Chiller_Efficiency = 0, CHWP_Efficiency = 0, CDWP_Efficiency = 0, CT_Efficiency = 0;
-    var TotalEfficiency= 0;
-
     //Get baseline reading from contract
-    const baseline = inputBaseline ? inputBaseline : await besc_client.helper.getBaseline(host_client, keypair);
+    // const baseline = inputBaseline ? inputBaseline : await besc_client.helper.getBaseline(host_client, keypair);
     
     //Get formula from contract
-    var formula = inputFormula ? inputFormula : await besc_client.helper.getAllFormulas(host_client, keypair);
-
-    var BTU_Reading = 0;
-    var previousBTU_Reading = 0;
-
-    BTU_Reading = energyDataObj.BTU;  
-    
-    let devicesReading = deviceReading.convertToReadingArray();
-
-    for (var x = 0; x < devicesReading.length; x++) {
-        var tempDeviceReading = devicesReading[x];
-
-        try{
-            if(tempDeviceReading.name != "BTU"){
-                
-                formula["Efficiency"].applyFieldsValues({"DeviceInput": tempDeviceReading.reading, "BTU": BTU_Reading});
-                devicesReading[x].Efficiency = formula["Efficiency"].calculate();
-
-                switch (tempDeviceReading.name) {
-                    case "Chiller":
-                        Chiller_Efficiency = devicesReading[x].Efficiency;
-                        break;
-                    case "CHWP":
-                        CHWP_Efficiency = devicesReading[x].Efficiency;
-                        break;
-
-                    case "CDWP":
-                        CDWP_Efficiency = devicesReading[x].Efficiency;
-                        break;
-
-                    case "CT":
-                        CT_Efficiency = devicesReading[x].Efficiency;
-                        break;
-                
-                    default:
-                        break;
-                }
-            }
-        }
-        catch(error){
-            console.log(error);
-        }
-    }
-    saveLog("\n\nCalculated Efficiency");
-    saveLog(JSON.stringify(devicesReading));
-
-    formula["Total_Efficiency"].applyFieldsValues({
-        "Chiller_Efficiency": Chiller_Efficiency, 
-        "CHWP_Efficiency": CHWP_Efficiency,
-        "CDWP_Efficiency" : CDWP_Efficiency,
-        "CT_Efficiency" : CT_Efficiency
-    });
-
-    finalReading.Chiller_Efficiency = Chiller_Efficiency;
-    finalReading.CHWP_Efficiency = CHWP_Efficiency;
-    finalReading.CDWP_Efficiency = CDWP_Efficiency;
-    finalReading.CT_Efficiency = CT_Efficiency;
-
-    TotalEfficiency = formula["Total_Efficiency"].calculate();
-
-    finalReading.Efficiency = TotalEfficiency;
-
-    if (previousData) {
-
-        try {
-            var previousReading = EnergyData.parseFromObject(previousData);
-
-            saveLog("\n\nPrevious Chiller Reading:" + previousReading.Chiller);
-
-            
-            finalReading.EnergyUsage = energyDataObj.Chiller - previousReading.Chiller;
-
-            previousBTU_Reading = previousReading.BTU;
-
-            saveLog("\n\nPrevious BTU Reading:" + previousBTU_Reading);
-
-            formula["Hourly_1"].applyFieldsValues({
-                "Baseline": baseline, 
-                "Total_Efficiency": TotalEfficiency
-            });
-        
-            result1 = formula["Hourly_1"].calculate();
-        
-            formula["Hourly_2"].applyFieldsValues({
-                "BTU_new": BTU_Reading
-            });
-        
-            result2 = formula["Hourly_2"].calculate();
-
-            formula["Hourly_Saving"].applyFieldsValues({
-                "result1": result1, 
-                "result2": result2
-            });
-
-            finalReading.Saved = formula["Hourly_Saving"].calculate();
-
-            finalReading.Formula = [
-                formula["Total_Efficiency"],
-                formula["Hourly_1"],
-                formula["Hourly_2"],
-                formula["Hourly_Saving"]
-            ];            
-
-        } catch (error) {
-            saveLog(JSON.stringify(error));
-        }
-    }
+    // var formula = inputFormula ? inputFormula : await besc_client.helper.getAllFormulas(host_client, keypair);
 
     return finalReading;
 }
@@ -495,10 +379,8 @@ const sendBatchData = async () => {
 
         var reading = [];
 
-        var formulas = [];
-
-        if(energyData.TotalKWH === null || energyData.TotalKWH === 0 || energyData.Formula === null || energyData.Formula === '' || energyData.Formula === '[]'){
-            reading.push(new Device(config.DeviceName, energyData.EnergyUsage, energyData.Saved, energyData.Efficiency, []));
+        if(energyData.EnergyUsage === null || energyData.EnergyUsage === 0){
+            reading.push(new Device(config.DeviceName, 0, 0, 0, []));
    
             var projectData = new ProjectData(
                 energyData.dateTime,
@@ -512,15 +394,7 @@ const sendBatchData = async () => {
             continue;
         }
 
-        var formulaArray = JSON.parse(energyData.Formula);
-
-        for (const declaredFormula of formulaArray) {
-            var formula = new besc_client.Formula(declaredFormula.name, declaredFormula.keys, declaredFormula.formula);
-            formula.applyFieldsValues(declaredFormula.fieldNames);
-            formulas.push(formula);
-        }
-
-        reading.push(new Device(config.DeviceName, energyData.EnergyUsage, energyData.Saved, energyData.Efficiency, formulas));
+        reading.push(new Device(config.DeviceName, energyData.EnergyUsage, energyData.Saved, energyData.Efficiency, []));
    
         var projectData = new ProjectData(
             energyData.dateTime,
@@ -597,10 +471,10 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
         var records = await dbUtils.queryNotSendEnergyDataLatest();
 
         //Get baseline reading from contract
-        const baseline = inputBaseline ? inputBaseline : await besc_client.helper.getBaseline(host_client, keypair);
+        // const baseline = inputBaseline ? inputBaseline : await besc_client.helper.getBaseline(host_client, keypair);
 
         //Get formula from contract
-        var formula = await besc_client.helper.getAllFormulas(host_client, keypair);
+        // var formula = await besc_client.helper.getAllFormulas(host_client, keypair);
 
         for(record of records){
             
@@ -627,32 +501,29 @@ var job = new CronJob(`*/${process.env.REPEAT_EVERY_MINUTES} * * * *`, async fun
             var previousData = records.find(x => x.rowid < record.rowid && x.TotalKWH !== 0);
 
             if(!previousData){
-                previousData = await dbUtils.getLastValidEnergyData(record.rowid);
-            }
+                try {
+                    previousData = await dbUtils.getLastValidEnergyData(record.rowid);
 
-            saveLog("Calculate Energy");
-            var energyReading = await calculateEnergy(tempEnergyData, previousData, baseline, formula);
+                    if(previousData){
+                        saveLog("Calculate Energy");
+                        var energyReading = await calculateEnergy(tempEnergyData, previousData.TotalKWH, previousData.TotalEFF);
 
-            var formulaFormatted = [];
+                        saveLog("Calculated Reading:");
+                        saveLog(JSON.stringify(energyReading));
 
-            for(var tempFormula of energyReading.Formula){
-                var f1 = tempFormula.duplicate();
-                delete f1.nodeFormula;
-                delete f1.code;
-                formulaFormatted.push(f1);
-            }
+                        tempEnergyData.name = energyReading.name;
+                        tempEnergyData.EnergyUsage = energyReading.EnergyUsage;
+                        tempEnergyData.Saved = energyReading.Saved;
+                        tempEnergyData.Efficiency = energyReading.Efficiency;
+                        tempEnergyData.Formula = JSON.stringify(formulaFormatted);
 
-            energyReading.Formula = formulaFormatted;
-
-            saveLog("Calculated Reading:");
-            saveLog(JSON.stringify(energyReading));
-
-            // tempEnergyData.EnergyUsage = energyReading.EnergyUsage;
-            // tempEnergyData.Saved = energyReading.Saved;
-            tempEnergyData.name = energyReading.name;
-            tempEnergyData.Formula = JSON.stringify(formulaFormatted);
-
-            await dbUtils.updateEnergyData(record.rowid, tempEnergyData);
+                        await dbUtils.updateEnergyData(record.rowid, tempEnergyData);
+                    }
+                } catch (error) {
+                    tempEnergyData.setDefaultEmpty();
+                    await dbUtils.updateEnergyData(record.rowid, tempEnergyData);
+                }
+            } 
         }
 
         var response = await sendBatchData();

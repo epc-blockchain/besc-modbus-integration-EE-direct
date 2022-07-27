@@ -3,21 +3,17 @@ var Reading = require('./Reading');
 class DeviceReading{
 
     constructor(){
-        this.Chiller = null;
-        this.CHWP = null;
-        this.CDWP = null;
-        this.CT = null;
-        this.BTU = null;
+        this.TotalKWH = null;
+        this.EnergySaving = null;
+        this.totalEFF = null;
         this.dateTime = null;
     }
 
     static parseFromObject(variable){
         var deviceReading = new DeviceReading();
-        deviceReading.Chiller = variable['Chiller'] !== null ? variable['Chiller'] : null;
-        deviceReading.CHWP = variable['CHWP'] !== null? variable['CHWP'] : null;
-        deviceReading.CDWP = variable['CDWP'] !== null ? variable['CDWP'] : null;
-        deviceReading.CT = variable['CT'] !== null ? variable['CT'] : null;
-        deviceReading.BTU = variable['BTU'] !== null ? variable['BTU'] : null;
+        deviceReading.TotalKWH = variable['TotalKWH'] !== null ? variable['TotalKWH'] : null;
+        deviceReading.EnergySaving = variable['EnergySaving'] !== null? variable['EnergySaving'] : null;
+        deviceReading.TotalEFF = variable['TotalEFF'] !== null ? variable['TotalEFF'] : null;
         deviceReading.dateTime = variable['dateTime'] !== null ? variable['dateTime'] : null;
 
         return deviceReading;

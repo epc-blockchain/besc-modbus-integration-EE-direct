@@ -11,34 +11,34 @@
             "Devices": [
                 {
                     "name": "EnergySaving",
-                    "deviceNum": 8,
+                    "deviceNum": 1,
                     "address": 40001,
                     "dataType": "float",
                     "mod": "",
                     "registerLength": 2,
-                    "registerType": 3,
+                    "registerType": 4,
                     "registerBit": 16,
                     "endian": "BE"
                 },
                 {
                     "name": "TotalKWH",
-                    "deviceNum": 3,
+                    "deviceNum": 1,
                     "address": 40100,
                     "dataType": "float",
                     "mod": "",
                     "registerLength": 2,
-                    "registerType": 3,
+                    "registerType": 4,
                     "registerBit": 16,
                     "endian": "BE"
                 },
                 {
                     "name": "TotalEFF",
-                    "deviceNum": 5,
+                    "deviceNum": 1,
                     "address": 40200,
                     "dataType": "float",
                     "mod": "",
                     "registerLength": 2,
-                    "registerType": 3,
+                    "registerType": 4,
                     "registerBit": 16,
                     "endian": "BE"
                 }
